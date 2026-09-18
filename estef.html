@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Estefanía 💖</title>
+    <style>
+        :root {
+            --bg-color: #0b0210;
+            --card-bg: rgba(26, 8, 38, 0.9);
+            --accent-pink: #ff2a85;
+            --accent-light: #ff758c;
+            --accent-purple: #c084fc;
+            --text-main: #fce7f3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Fondo de flores/pétalos flotantes */
+        .flower-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* --- FASE 1: LA CARTA INICIAL --- */
+        .envelope-container {
+            z-index: 10;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.4s ease;
+            text-align: center;
+        }
+
+        .envelope-container:hover {
+            transform: scale(1.05);
+        }
+
+        .envelope {
+            width: 320px;
+            height: 220px;
+            background: linear-gradient(135deg, #ff758c, #ff2a85);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(255, 42, 133, 0.4);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 110px solid #e61970;
+            transform-origin: top;
+            transition: transform 0.6s ease;
+            z-index: 3;
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .seal {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 4;
+            transition: transform 0.3s;
+        }
+
+        .envelope-text {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+            font-weight: bold;
+        }
+
+        /* --- CARTA DESPLEGADA (MODAL) --- */
+        .letter-modal {
+            position: absolute;
+            background: var(--card-bg);
+            border: 2px solid var(--accent-pink);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 42, 133, 0.5);
+            z-index: 20;
+            transform: scale(0);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+        }
+
+        .letter-modal.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .letter-modal h2 {
+            color: var(--accent-light);
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .letter-modal p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #fbcfe8;
+            margin-bottom: 30px;
+        }
+
+        .btn-open-site {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 42, 133, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-open-site:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 42, 133, 0.7);
+        }
+
+        /* --- FASE 2: SITIO PRINCIPAL (OCULTO AL INICIO) --- */
+        .main-site {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .main-site.active {
+            display: flex;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            color: #fff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--accent-pink);
+            animation: pulse-title 2s infinite alternate;
+        }
+
+        @keyframes pulse-title {
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
+        }
+
+        .love-btn {
+            background: linear-gradient(45deg, #ff2a85, #c084fc);
+            color: white;
+            border: none;
+            padding: 20px 45px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(255, 42, 133, 0.6);
+            transition: all 0.2s ease;
+            z-index: 30;
+        }
+
+        .love-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px rgba(255, 42, 133, 0.9);
+        }
+
+        /* Ventanas flotantes dinámicas que aparecen al hacer clic */
+        .floating-window {
+            position: absolute;
+            background: rgba(26, 8, 38, 0.95);
+            border: 2px solid var(--accent-pink);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(255, 42, 133, 0.5);
+            color: #fff;
+            font-size: 0.95rem;
+            z-index: 40;
+            pointer-events: none;
+            animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            max-width: 280px;
+            text-align: left;
+        }
+
+        @keyframes pop-in {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .floating-window .win-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+            font-size: 11px;
+            color: #ff758c;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fondo de pétalos y flores flotantes -->
+    <canvas class="flower-canvas" id="flowerCanvas"></canvas>
+
+    <!-- FASE 1: LA CARTA / SOBRE INICIAL -->
+    <div class="envelope-container" id="envelopeContainer" onclick="openEnvelope()">
+        <div class="envelope" id="envelope">
+            <div class="envelope-flap"></div>
+            <div class="seal">💌</div>
+        </div>
+        <div class="envelope-text">Toca para abrir tu carta, Estefanía</div>
+    </div>
+
+    <!-- MODAL DE LA CARTA DESPLEGADA -->
+    <div class="letter-modal" id="letterModal">
+        <h2>Para: Estefanía 🌸</h2>
+        <p>
+            "hola m bri, yo no soy d hacer esto pero esta pagina la cree para mandartela y demostrarte q te amo demasiado akjsdka pq es lo q mas mg hacer y qn mas que para mi princesa linda, me encantas mucho cada parte de ti la amo con todo mi ser, el cuando ries me encanta escucharte y pasar tiempo contigo, I LOVE YOU MY LOVE"
+        </p>
+        <button class="btn-open-site" onclick="goToMainSite()">Entrar a nuestra sorpresa ✨</button>
+    </div>
+
+    <!-- FASE 2: SITIO PRINCIPAL (VENTANAS INFINITAS) -->
+    <div class="main-site" id="mainSite">
+        <h1 class="main-title">Te amo con cada parte de mi ser, Estefanía 💖</h1>
+        <p style="color: #fbcfe8; margin-bottom: 30px; font-size: 1.1rem;">Haz clic en el botón tantas veces como quieras comprobarlo...</p>
+        <button class="love-btn" onclick="spawnLoveWindows()">¡Presióname! 💕</button>
+    </div>
+
+    <script>
+        // --- ANIMACIÓN DE FLORES Y PÉTALOS FLOTANTES ---
+        const canvas = document.getElementById('flowerCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const symbols = ["🌸", "💮", "🌷", "✨", "💖", "❀", "✿"];
+        let particles = [];
+        for(let i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                speed: Math.random() * 1.2 + 0.4,
+                size: Math.random() * 16 + 10,
+                symbol: symbols[Math.floor(Math.random() * symbols.length)],
+                opacity: Math.random() * 0.6 + 0.3
+            });
+        }
+
+        function drawFlowers() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.font = p.size + 'px sans-serif';
+                ctx.fillStyle = `rgba(255, 117, 140, ${p.opacity})`;
+                ctx.fillText(p.symbol, p.x, p.y);
+                
+                p.y += p.speed;
+                if(p.y > canvas.height + 20) {
+                    p.y = -20;
+                    p.x = Math.random() * canvas.width;
+                }
+            });
+            requestAnimationFrame(drawFlowers);
+        }
+        drawFlowers();
+
+        // --- INTERACCIÓN DE LA CARTA ---
+        function openEnvelope() {
+            const envelope = document.getElementById('envelope');
+            envelope.classList.add('open');
+            
+            setTimeout(() => {
+                document.getElementById('envelopeContainer').style.display = 'none';
+                document.getElementById('letterModal').classList.add('show');
+            }, 500);
+        }
+
+        function goToMainSite() {
+            document.getElementById('letterModal').classList.remove('show');
+            setTimeout(() => {
+                document.getElementById('letterModal').style.display = 'none';
+                document.getElementById('mainSite').classList.add('active');
+            }, 300);
+        }
+
+        // --- GENERADOR DE VENTANAS FLOTANTES INFINITAS ---
+        const lovePhrases = [
+            "Te amo con cada latido de mi corazón, Estefanía 💖",
+            "Eres lo mejor que me ha pasado en la vida ✨",
+            "Te amo hoy, mañana y siempre 🌸",
+            "Cada segundo a tu lado es perfecto 🌷",
+            "Eres mi casualidad más hermosa 💫",
+            "Te amo con toda el alma, Estefanía 💕",
+            "Mi mundo es mucho mejor desde que estás tú 🌺"
+        ];
+
+        function spawnLoveWindows() {
+            // Genera entre 3 y 6 ventanas flotantes por cada clic
+            const count = Math.floor(Math.random() * 4) + 3;
+            
+            for (let i = 0; i < count; i++) {
+                const win = document.createElement('div');
+                win.className = 'floating-window';
+                
+                // Posición aleatoria en pantalla pero evitando los bordes extremos
+                const randomX = Math.random() * (window.innerWidth - 320);
+                const randomY = Math.random() * (window.innerHeight - 200);
+                
+                win.style.left = `${randomX}px`;
+                win.style.top = `${randomY}px`;
+                
+                const phrase = lovePhrases[Math.floor(Math.random() * lovePhrases.length)];
+                
+                win.innerHTML = `
+                    <div class="win-header">
+                        <span>Mensaje_Amor.exe</span>
+                        <span>❤️</span>
+                    </div>
+                    <div>${phrase}</div>
+                `;
+                
+                document.body.appendChild(win);
+            }
+        }
+    </script>
+</body>
+</html>
